@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native';
 
-import submit from '../submit';
+/****************** Case 3: *******************/
+// import submit from '../submit';
 
 
 /****************** Case 1: *******************/
@@ -37,26 +38,36 @@ const required = value => value ? undefined : 'Required';
 const maxLength15 = value => value && value.length > 15 ? 'Must be 15 chars' : undefined;
 const number = value => value && isNaN(Number(value)) ? 'Must be a number' : undefined;
 
-// const submit = (values) => {
-//     alert('Submit:' + JSON.stringify(values));
-// }
+const submit = (values) => {
+    alert('Submit:' + JSON.stringify(values));
+}
 
-const renderField = ({ placeholder, label, keyboardType, meta: { touched, error, warning }, input: { onChange, ...restInput } }) => {
-    return (
-        <View style={{ flexDirection: 'row', height: 50, alignItems: 'center' }}>
-            <Text style={{ fontSize: 14, fontWeight: 'bold', width: 80 }}>
-                {label}
-            </Text>
+/****************** Case 4: *******************/
+import validate from '../validate';
+import asyncValidate from '../asyncValidate';
 
-            <TextInput 
-                style={{ borderColor: 'steelblue', borderWidth: 1, height: 37, width: 220, padding: 5 }}
-                keyboardType={keyboardType} onChangeText={onChange} placeholder={placeholder} {...restInput}
-            />
 
-            {touched && ((error && <Text style={{ color: 'red' }}>{error}</Text>) || 
-                (warning && <Text style={{ color: 'yellow' }}>{warning}</Text>))}
-        </View>
-    );
+// asyncValidating is boolean
+const renderField = ({ placeholder, label, keyboardType, 
+    meta: { touched, error, warning, asyncValidating }, 
+    input: { onChange, ...restInput }}) => {
+        return (
+            <View style={{ flexDirection: 'row', height: 50, alignItems: 'center' }}>
+                <Text style={{ fontSize: 14, fontWeight: 'bold', width: 80 }}>
+                    {label}
+                </Text>
+
+                <TextInput 
+                    style={{ borderColor: 'steelblue', borderWidth: 1, height: 37, width: 220, padding: 5 }}
+                    keyboardType={keyboardType} onChangeText={onChange} placeholder={placeholder} {...restInput}
+                />
+
+                {touched && ((error && <Text style={{ color: 'red' }}>{error}</Text>) || 
+                    (warning && <Text style={{ color: 'yellow' }}>{warning}</Text>) ||
+                    (asyncValidating && <Text style={{ color: 'orange' }}>Validating...</Text>)
+                )}
+            </View>
+        );
 }
 
 const ContactComponent = props => {
@@ -82,7 +93,7 @@ const ContactComponent = props => {
             <Field 
                 name="email" 
                 keyboardType="email-address" 
-                abel="Email" 
+                label="Email" 
                 component={renderField}
                 warn={[required]}
             />
@@ -115,5 +126,9 @@ const ContactComponent = props => {
 }
 
 export default reduxForm({ 
-    form: 'contact'
+    form: 'contact',
+    /****************** Case 4: *******************/
+    validate,
+    asyncValidate,
+    asyncBlurFields: ['username'] // Field's name applied
 })(ContactComponent);
